@@ -57,7 +57,7 @@ if not WGET_LUA:
 #
 # Update this each time you make a non-cosmetic change.
 # It will be added to the WARC files and reported to the tracker.
-VERSION = "20150417.01"
+VERSION = "20150909.01"
 USER_AGENT = 'ArchiveTeam'
 TRACKER_ID = 'googlecode'
 TRACKER_HOST = 'tracker.archiveteam.org'
@@ -198,6 +198,18 @@ class WgetArgs(object):
         
         if item_type == 'project':
             wget_args.append('https://code.google.com/p/{0}/'.format(item_value))
+            wget_args.append('http://{0}.googlecode.com/'.format(item_value))
+            wget_args.append('http://{0}.googlecode.com/svn/'.format(item_value))
+            wget_args.append('http://{0}.googlecode.com/hg/'.format(item_value))
+            wget_args.append('http://{0}.googlecode.com/git/'.format(item_value))
+            wget_args.append('https://code.google.com/p/{0}/source/'.format(item_value))
+            wget_args.append('https://code.google.com/p/{0}/downloads/'.format(item_value))
+            wget_args.append('https://code.google.com/p/{0}/w/'.format(item_value))
+            wget_args.append('https://code.google.com/p/{0}/wiki/'.format(item_value))
+            wget_args.append('https://code.google.com/p/{0}/issues/'.format(item_value))
+            wget_args.append('https://code.google.com/p/{0}/downloads/list?can=1&q=&colspec=Filename+Summary+Uploaded+ReleaseDate+Size+DownloadCount'.format(item_value))
+            wget_args.append('https://code.google.com/p/{0}/w/list?can=1&q=&colspec=PageName+Summary+Changed+ChangedBy'.format(item_value))
+            wget_args.append('https://code.google.com/p/{0}/issues/list?can=1&q=&colspec=ID+Type+Status+Priority+Milestone+Owner+Summary&cells=tiles'.format(item_value))
         else:
             raise Exception('Unknown item')
         
