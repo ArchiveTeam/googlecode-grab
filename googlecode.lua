@@ -131,16 +131,16 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
           check(newurl)
         end
       end
---      for branch in string.gmatch(string.match(html, '<select%s+id="branch_select"[^>]+>(.*)</select>'), 'value="([^"]+)"') do
+--      for branch in string.gmatch(string.match(html, '<select%s+id="branch_select"[^>]+>(.-)</select>'), 'value="([^"]+)"') do
 --        if string.match(url, "[^a-z0-9A-Z%-]name=") then
 --          check(string.gsub(url, "name=[^a-z0-9A-Z%.%-_]+", "name="..branch)
 --        else
 --          check(string.match(string.match(url, "(https?://[^%?]+)"), "(https?://[^#]+)").."?name="..value)
 --        end
 --      end
-      for select in string.gmatch(html, '(<select[^>]+>.*</select>)') do
+      for select in string.gmatch(html, '(<select[^>]+>.-</select>)') do
         local selectname = string.match(string.match(select, "<select([^>]+)>"), 'name="([^"]+)"')
-        for value in string.gmatch(string.match(select, '<select[^>]+>(.*)</select>'), 'value="([^"]+)"') do
+        for value in string.gmatch(string.match(select, '<select[^>]+>(.-)</select>'), 'value="([^"]+)"') do
           if string.match(url, "[^0-9a-zA-Z%-%._]"..selectname.."=") then
             check(string.gsub(url, selectname.."=[0-9a-zA-Z%.%-_]+", selectname.."="..value))
           else
