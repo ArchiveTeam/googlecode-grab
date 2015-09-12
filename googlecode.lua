@@ -1,5 +1,6 @@
 dofile("urlcode.lua")
 dofile("table_show.lua")
+JSON = (loadfile "JSON.lua")()
 
 local url_count = 0
 local tries = 0
@@ -11,6 +12,17 @@ local downloaded = {}
 local addedtolist = {}
 
 local status_code = nil
+
+load_json_file = function(file)
+  if file then
+    local f = io.open(file)
+    local data = f:read("*all")
+    f:close()
+    return JSON:decode(data)
+  else
+    return nil
+  end
+end
 
 read_file = function(file)
   if file then
@@ -52,18 +64,19 @@ wget.callbacks.download_child_p = function(urlpos, parent, depth, start_url_pars
   end
   
   if item_type == "project" and (downloaded[string.match(url, "https?://([^#]+)")] ~= true or addedtolist[string.match(url, "https?://([^#]+)")] ~= true) then
-    if status_code ~= 404 and ((string.match(url, "https?://code%.google%.com/p/"..itemvalue) and not string.match(url, "https?://code%.google%.com/p/"..itemvalue.."[0-9a-zA-Z%-]")) or string.match(url, itemvalue.."%.googlecode%.com") or string.match(url, "https?://code%.google%.com/[^/]+/p/"..itemvalue) or html == 0) and not (string.match(url, "google%.com/accounts/ServiceLogin%?") or string.match(url, "https?://accounts%.google%.com/ServiceLogin%?") or (string.match(url, "%?r=") and not string.match(url, "detail%?r=")) or string.match(url, "/%?repo=[^&]+&r=")) then
-      if string.match(url, "[^a-z0-9A-Z%-]spec=svn") and string.match(url, "[^a-z0-9A-Z%-]r=") then
-        if revisioncheck(url) == true then
-          addedtolist[string.match(url, "https?://([^#]+)")] = true
-          added = added + 1
-          return true
-        end
-      else
-        addedtolist[string.match(url, "https?://([^#]+)")] = true
-        added = added + 1
-        return true
-      end
+    -- or (string.match(url, "%?r=") and not string.match(url, "detail%?r=")) or string.match(url, "/%?repo=[^&]+&r=")
+    if status_code ~= 404 and ((string.match(url, "https?://code%.google%.com/p/"..itemvalue) and not string.match(url, "https?://code%.google%.com/p/"..itemvalue.."[0-9a-zA-Z%-]")) or string.match(url, itemvalue.."%.googlecode%.com") or string.match(url, "https?://code%.google%.com/[^/]+/p/"..itemvalue) or html == 0) and not (string.match(url, "google%.com/accounts/ServiceLogin%?") or string.match(url, "https?://accounts%.google%.com/ServiceLogin%?")) then
+--      if string.match(url, "[^a-z0-9A-Z%-]spec=svn") and string.match(url, "[^a-z0-9A-Z%-]r=") then
+--        if revisioncheck(url) == true then
+--          addedtolist[string.match(url, "https?://([^#]+)")] = true
+--          added = added + 1
+--          return true
+--        end
+--      else
+      addedtolist[string.match(url, "https?://([^#]+)")] = true
+      added = added + 1
+      return true
+--      end
     else
       return false
     end
@@ -77,16 +90,17 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
   local itemvalue = string.gsub(item_value, "%-", "%%-")
   
   local function check(url)
-    if (downloaded[string.match(url, "https?://([^#]+)")] ~= true and addedtolist[string.match(url, "https?://([^#]+)")] ~= true) and (string.match(url, "https?://code%.google%.com") or string.match(url, "https?://[^%.]+%.googlecode%.com") or string.match(url, "https?://[^%.]+%.[^%.]+%.googlecode%.com")) and not (string.match(url, "https?://code%.google%.com/archive/p/") or (string.match(url, "%?r=") and not string.match(url, "detail%?r=")) or string.match(url, "%?repo=[^&]+&r=") or string.match(url, "google%.com/accounts/ServiceLogin%?") or string.match(url, "https?://accounts%.google%.com/ServiceLogin%?") or string.match(url, ">") or string.match(url, "%%3E")) then
+      -- or (string.match(url, "%?r=") and not string.match(url, "detail%?r=")) or string.match(url, "%?repo=[^&]+&r=")
+    if (downloaded[string.match(url, "https?://([^#]+)")] ~= true and addedtolist[string.match(url, "https?://([^#]+)")] ~= true) and (string.match(url, "https?://code%.google%.com") or string.match(url, "https?://[^%.]+%.googlecode%.com") or string.match(url, "https?://[^%.]+%.[^%.]+%.googlecode%.com")) and not (string.match(url, "https?://code%.google%.com/archive/p/") or string.match(url, "google%.com/accounts/ServiceLogin%?") or string.match(url, "https?://accounts%.google%.com/ServiceLogin%?") or string.match(url, ">") or string.match(url, "%%3E")) then
       if string.match(url, "&amp;") then
         check(string.gsub(url, "&amp;", "&"))
         addedtolist[string.match(url, "https?://([^#]+)")] = true
-      elseif string.match(url, "[^a-z0-9A-Z%-]spec=svn") and string.match(url, "[^a-z0-9A-Z%-]r=") then
-        if revisioncheck(url) == true then
-          table.insert(urls, { url=url })
-          addedtolist[string.match(url, "https?://([^#]+)")] = true
-          added = added + 1
-        end
+--      elseif string.match(url, "[^a-z0-9A-Z%-]spec=svn") and string.match(url, "[^a-z0-9A-Z%-]r=") then
+--        if revisioncheck(url) == true then
+--          table.insert(urls, { url=url })
+--          addedtolist[string.match(url, "https?://([^#]+)")] = true
+--          added = added + 1
+--        end
       else
         table.insert(urls, { url=url })
         addedtolist[string.match(url, "https?://([^#]+)")] = true
@@ -117,6 +131,36 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
           check(newurl)
         end
       end
+--      for branch in string.gmatch(string.match(html, '<select%s+id="branch_select"[^>]+>(.*)</select>'), 'value="([^"]+)"') do
+--        if string.match(url, "[^a-z0-9A-Z%-]name=") then
+--          check(string.gsub(url, "name=[^a-z0-9A-Z%.%-_]+", "name="..branch)
+--        else
+--          check(string.match(string.match(url, "(https?://[^%?]+)"), "(https?://[^#]+)").."?name="..value)
+--        end
+--      end
+      for select in string.gmatch(html, '(<select[^>]+>.*</select>)') do
+        local selectname = string.match(string.match(select, "<select([^>]+)>"), 'name="([^"]+)"')
+        for value in string.gmatch(string.match(select, '<select[^>]+>(.*)</select>'), 'value="([^"]+)"') do
+          if string.match(url, "[^0-9a-zA-Z%-%._]"..selectname.."=") then
+            check(string.gsub(url, selectname.."=[0-9a-zA-Z%.%-_]+", selectname.."="..value))
+          else
+            check(string.match(string.match(url, "(https?://[^%?]+)"), "(https?://[^#]+)").."?"..selectname.."="..value)
+          end
+        end
+      end
+
+--    https://code.google.com/p/pychess/source/dirfeed?c=&p=lang%252Fbn&l=2&fp=1&sp=1&r=ed814cd78e6f6ad04c70454cdff100a700468884
+
+      if string.match() then
+        -- WIP
+      end
+--      for newurl in string.gmatch(html, '"([^"]+)":%s+%[') do
+--        if string.match(url, '%?r=[a-z0-9A-Z%-]+#svn') then
+--          check(string.match(url, "(https?://.+)/%?r=[a-z0-9A-Z%-]+#svn")..string.gsub(string.match(url, "https?://.+%?r=[a-z0-9A-Z%-]+#svn(.+)"), "%2F", "/").."/"..newurl..string.match(url, "(%?r=[a-z0-9A-Z%-]+)#svn"))
+--        elseif string.match(url, "#svn") then
+--          check(string.gsub(url, "/#svn", "").."/"..newurl)
+--        end
+--      end
       for newurl in string.gmatch(html, '"%.%./%.%.(/[^"]+)"') do
         if string.match(newurl, "/"..itemvalue) and not string.match(newurl, "/"..itemvalue.."[0-9a-zA-Z%-]") then
           check(string.match(url, "(https?://[^/]+/[^/]+)/")..newurl)
