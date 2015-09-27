@@ -13,8 +13,6 @@ local addedtolist = {}
 
 local status_code = nil
 
-local jsonfiles = {}
-
 load_json_file = function(file)
   if file then
     return JSON:decode(file)
@@ -109,6 +107,7 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
   end
   
   if item_type == "project" and status_code ~= 404 then
+    local jsonfiles = {}
     if string.match(url, "/"..itemvalue) and not string.match(url, "/"..itemvalue.."[0-9a-zA-Z%-]") then
       html = read_file(file)
       for newurl in string.gmatch(html, 'href=("[^"]+)"') do
@@ -147,6 +146,56 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
           end
         end
       end
+      if string.match(url, "/dirfeed%?c=") then
+        local json = html
+        jsonlua = load_json_file(json)
+        local revision = string.match(url, "[^0-9a-zA-Z]r=([0-9a-zA-Z%-_]+)")
+        local newfolders = { "jsonlua" }
+        local firstdir = true
+        while true do
+          if #newfolders == 0 then
+            break
+          end
+          local newsubdirs = newfolders
+          newfolders = {}
+          for _, subdir in pairs(newsubdirs) do
+            local loadingstring = nil
+            if string.gsub(string.match(subdir, "^[^%.]+%.?(.*)"), "%.", '"]["') == "" then
+              loadingstring = "return "..string.match(subdir, "^([^%.]+)")
+            else
+              loadingstring = "return "..string.match(subdir, "^([^%.]+)")..'["'..string.gsub(string.match(subdir, "^[^%.]+%.?(.*)"), "%.", '"]["')..'"]["subdirs"]'
+            end
+            if assert(loadstring(loadingstring))() then
+              for a, b in pairs(assert(loadstring(loadingstring))()) do
+                if firstdir == true then
+                  table.insert(jsonfiles, subdir.."."..a)
+                  table.insert(newfolders, subdir.."."..a)
+                  firstdir = false
+                else
+                  table.insert(jsonfiles, subdir..".subdirs."..a)
+                  table.insert(newfolders, subdir..".subdirs."..a)
+                end
+              end
+            end
+          end
+        end
+        for _, subdir in pairs(jsonfiles) do
+          if string.match(subdir, "jsonlua%..-%.subdirs%.") then
+            local localc = string.match(url, "/dirfeed%?c=(.-)&p=")
+            check("https://code.google.com/p/"..item_value.."/source/dirfeed?c="..localc.."&p="..string.gsub(string.gsub(string.match(subdir, "jsonlua%.(.+)"), "%.subdirs%.", "%%252F"), "/", "%%252F").."&l=2&fp=1&sp=1&r="..revision)
+            local loadingstring = "return "..string.match(subdir, "^([^%.]+)")..'["'..string.gsub(string.match(subdir, "^[^%.]+%.?(.*)"), "%.", '"]["')..'"]["filePage"]'
+            if assert(loadstring(loadingstring))() then
+              for a, b in pairs(assert(loadstring(loadingstring..'["files"]'))()) do
+                if string.match(url, "[^a-z0-9A-Z%-_]r=[0-9a-zA-Z%-_]+") then
+                  check(string.gsub("https://code.google.com/p/"..item_value.."/source/browse/"..string.gsub(string.match(subdir, "jsonlua%.(.+)"), "%.subdirs%.", "/").."/"..a.."?r="..string.match(url, "[^a-z0-9A-Z%-_]r=([0-9a-zA-Z%-_]+)"), "//", "/"))
+                else
+                  check(string.gsub("https://code.google.com/p/"..item_value.."/source/browse/"..string.gsub(string.match(subdir, "jsonlua%.(.+)"), "%.subdirs%.", "/").."/"..a, "//", "/"))
+                end
+              end
+            end
+          end
+        end
+      end
       for jsonline in string.gmatch(html, "_init%(([^\n]+)") do
         local json = string.match(jsonline, "(.+)%);$")
         jsonlua = load_json_file(json)
@@ -175,14 +224,18 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
         end
         for _, subdir in pairs(jsonfiles) do
           if string.match(subdir, "jsonlua%.subdirs%.[^%.]+%.subdirs%.") then
-            check("https://code.google.com/p/"..item_value.."/source/dirfeed?c=&p="..string.gsub(string.match(subdir, "jsonlua%.subdirs%.[^%.]+%.subdirs%.(.+)"), "%.subdirs%.", "%%252F").."&l=2&fp=1&sp=1&r="..revision)
+            local localc = ""
+            if string.match(url, "/source/browse/[^#%?%%]+") then
+              localc = string.match(url, "/source/browse/([^#%?%%]+)").."%2F"
+            end
+            check("https://code.google.com/p/"..item_value.."/source/dirfeed?c="..localc.."&p="..string.gsub(string.match(subdir, "jsonlua%.subdirs%.[^%.]+%.subdirs%.(.+)"), "%.subdirs%.", "%%252F").."&l=2&fp=1&sp=1&r="..revision)
             local loadingstring = "return "..string.match(subdir, "^([^%.]+)")..'["'..string.gsub(string.match(subdir, "^[^%.]+%.?(.*)"), "%.", '"]["')..'"]["filePage"]'
             if assert(loadstring(loadingstring))() then
               for a, b in pairs(assert(loadstring(loadingstring..'["files"]'))()) do
                 if string.match(url, "[^a-z0-9A-Z%-_]r=[0-9a-zA-Z%-_]+") then
-                  check("https://code.google.com/p/"..item_value.."/source/browse/"..string.gsub(string.match(subdir, "jsonlua%.subdirs%.[^%.]+%.subdirs%.(.+)"), "%.subdirs%.", "/")..a.."?r="..string.match(url, "[^a-z0-9A-Z%-_]r=([0-9a-zA-Z%-_]+)"))
+                  check(string.gsub("https://code.google.com/p/"..item_value.."/source/browse/"..string.gsub(string.match(subdir, "jsonlua%.subdirs%.[^%.]+%.subdirs%.(.+)"), "%.subdirs%.", "/").."/"..a.."?r="..string.match(url, "[^a-z0-9A-Z%-_]r=([0-9a-zA-Z%-_]+)"), "//", "/"))
                 else
-                  check("https://code.google.com/p/"..item_value.."/source/browse/"..string.gsub(string.match(subdir, "jsonlua%.subdirs%.[^%.]+%.subdirs%.(.+)"), "%.subdirs%.", "/")..a)
+                  check(string.gsub("https://code.google.com/p/"..item_value.."/source/browse/"..string.gsub(string.match(subdir, "jsonlua%.subdirs%.[^%.]+%.subdirs%.(.+)"), "%.subdirs%.", "/").."/"..a, "//", "/"))
                 end
               end
             end
