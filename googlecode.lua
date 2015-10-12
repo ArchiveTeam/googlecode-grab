@@ -170,45 +170,27 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
                 if firstdir == true then
                   table.insert(jsonfiles, subdir.."."..a)
                   table.insert(newfolders, subdir.."."..a)
-                  io.stdout:write(subdir.."."..a..".  \n")
-                  io.stdout:flush()
                   firstdir = false
                 else
                   table.insert(jsonfiles, subdir..".subdirs."..a)
                   table.insert(newfolders, subdir..".subdirs."..a)
-                  io.stdout:write(subdir..".subdirs."..a..".  \n")
-                  io.stdout:flush()
                 end
               end
             end
           end
         end
         for _, subdir in pairs(jsonfiles) do
-          io.stdout:write(subdir..".  \n")
-          io.stdout:flush()
           if string.match(subdir, "jsonlua%..-%.subdirs%.") then
             local localc = string.match(url, "/dirfeed%?c=(.-)&p=")
-            io.stdout:write("https://code.google.com/p/"..item_value.."/source/dirfeed?c="..localc.."&p="..string.gsub(string.gsub(string.match(subdir, "jsonlua%.(.+)"), "%.subdirs%.", "%%252F"), "/", "%%252F").."&l=2&fp=1&sp=1&r="..revision..".  \n")
-            io.stdout:flush()
-            io.stdout:write("https://code.google.com/p/"..item_value.."/source/browse/"..string.gsub(string.gsub(string.match(subdir, "jsonlua%.(.+)"), "%.subdirs%.", "/").."/?r="..revision, "//", "/")..".  \n")
-            io.stdout:flush()
             check("https://code.google.com/p/"..item_value.."/source/dirfeed?c="..localc.."&p="..string.gsub(string.gsub(string.match(subdir, "jsonlua%.(.+)"), "%.subdirs%.", "%%252F"), "/", "%%252F").."&l=2&fp=1&sp=1&r="..revision)
             check("https://code.google.com/p/"..item_value.."/source/browse/"..string.gsub(string.gsub(string.match(subdir, "jsonlua%.(.+)"), "%.subdirs%.", "/").."/?r="..resision, "//", "/"))
             local loadingstring = "return "..string.match(subdir, "^([^%.]+)")..'["'..string.gsub(string.match(subdir, "^[^%.]+%.?(.*)"), "%.", '"]["')..'"]["filePage"]'
             if assert(loadstring(loadingstring))() then
-                  io.stdout:write("yes.  \n")
-                  io.stdout:flush()
               for a, b in pairs(assert(loadstring(loadingstring..'["files"]'))()) do
-                  io.stdout:write("yess, "..a..".  \n")
-                  io.stdout:flush()
                 if string.match(url, "[^a-z0-9A-Z%-_]r=[0-9a-zA-Z%-_]+") then
                   check("https://code.google.com/p/"..item_value.."/source/browse/"..string.gsub(string.gsub(string.match(subdir, "jsonlua%.(.+)"), "%.subdirs%.", "/").."/"..a.."?r="..string.match(url, "[^a-z0-9A-Z%-_]r=([0-9a-zA-Z%-_]+)"), "//", "/"))
-                  io.stdout:write("https://code.google.com/p/"..item_value.."/source/browse/"..string.gsub(string.gsub(string.match(subdir, "jsonlua%.(.+)"), "%.subdirs%.", "/").."/"..a.."?r="..string.match(url, "[^a-z0-9A-Z%-_]r=([0-9a-zA-Z%-_]+)"), "//", "/")..".    111111  \n")
-                  io.stdout:flush()
                 else
                   check("https://code.google.com/p/"..item_value.."/source/browse/"..string.gsub(string.gsub(string.match(subdir, "jsonlua%.(.+)"), "%.subdirs%.", "/").."/"..a, "//", "/"))
-                  io.stdout:write("https://code.google.com/p/"..item_value.."/source/browse/"..string.gsub(string.gsub(string.match(subdir, "jsonlua%.(.+)"), "%.subdirs%.", "/").."/"..a, "//", "/")..".    22222222  \n")
-                  io.stdout:flush()
                 end
               end
             end
@@ -233,47 +215,29 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
             else
               loadingstring = "return "..string.match(subdir, "^([^%.]+)")..'["'..string.gsub(string.match(subdir, "^[^%.]+%.?(.*)"), "%.", '"]["')..'"]["subdirs"]'
             end
-          io.stdout:write(subdir..".subdirs".."  \n")
-          io.stdout:flush()
             if assert(loadstring(loadingstring))() then
               for a, b in pairs(assert(loadstring(loadingstring))()) do
                 table.insert(jsonfiles, subdir..".subdirs."..a)
                 table.insert(newfolders, subdir..".subdirs."..a)
-                io.stdout:write(subdir..".subdirs."..a..".  \n")
-                io.stdout:flush()
               end
             end
           end
         end
         for _, subdir in pairs(jsonfiles) do
-          io.stdout:write(subdir..".  \n")
-          io.stdout:flush()
           if string.match(subdir, "jsonlua%.subdirs%.[^%.]+%.subdirs%.") then
             local localc = ""
             if string.match(url, "/source/browse/[^#%?%%]+") then
               localc = string.match(url, "/source/browse/([^#%?%%]+)").."%2F"
             end
-            io.stdout:write("https://code.google.com/p/"..item_value.."/source/dirfeed?c="..localc.."&p="..string.gsub(string.match(subdir, "jsonlua%.subdirs%.[^%.]+%.subdirs%.(.+)"), "%.subdirs%.", "%%252F").."&l=2&fp=1&sp=1&r="..revision..".  \n")
-            io.stdout:flush()
-            io.stdout:write("https://code.google.com/p/"..item_value.."/source/browse/"..string.gsub(string.gsub(string.match(subdir, "jsonlua%.subdirs%.[^%.]+%.subdirs%.(.+)"), "%.subdirs%.", "/").."/?r="..revision, "//", "/")..".  \n")
-            io.stdout:flush()
             check("https://code.google.com/p/"..item_value.."/source/dirfeed?c="..localc.."&p="..string.gsub(string.match(subdir, "jsonlua%.subdirs%.[^%.]+%.subdirs%.(.+)"), "%.subdirs%.", "%%252F").."&l=2&fp=1&sp=1&r="..revision)
             check("https://code.google.com/p/"..item_value.."/source/browse/"..string.gsub(string.gsub(string.match(subdir, "jsonlua%.subdirs%.[^%.]+%.subdirs%.(.+)"), "%.subdirs%.", "/").."/?r="..revision, "//", "/"))
             local loadingstring = "return "..string.match(subdir, "^([^%.]+)")..'["'..string.gsub(string.match(subdir, "^[^%.]+%.?(.*)"), "%.", '"]["')..'"]["filePage"]'
             if assert(loadstring(loadingstring))() then
-                  io.stdout:write("yes.  \n")
-                  io.stdout:flush()
               for a, b in pairs(assert(loadstring(loadingstring..'["files"]'))()) do
-                  io.stdout:write("yess, "..a..".  \n")
-                  io.stdout:flush()
                 if string.match(url, "[^a-z0-9A-Z%-_]r=[0-9a-zA-Z%-_]+") then
                   check("https://code.google.com/p/"..item_value.."/source/browse/"..string.gsub(string.gsub(string.match(subdir, "jsonlua%.subdirs%.[^%.]+%.subdirs%.(.+)"), "%.subdirs%.", "/").."/"..a.."?r="..string.match(url, "[^a-z0-9A-Z%-_]r=([0-9a-zA-Z%-_]+)"), "//", "/"))
-                  io.stdout:write("https://code.google.com/p/"..item_value.."/source/browse/"..string.gsub(string.gsub(string.match(subdir, "jsonlua%.subdirs%.[^%.]+%.subdirs%.(.+)"), "%.subdirs%.", "/").."/"..a.."?r="..string.match(url, "[^a-z0-9A-Z%-_]r=([0-9a-zA-Z%-_]+)"), "//", "/")..".  \n")
-                  io.stdout:flush()
                 else
                   check("https://code.google.com/p/"..item_value.."/source/browse/"..string.gsub(string.gsub(string.match(subdir, "jsonlua%.subdirs%.[^%.]+%.subdirs%.(.+)"), "%.subdirs%.", "/").."/"..a, "//", "/"))
-                  io.stdout:write("https://code.google.com/p/"..item_value.."/source/browse/"..string.gsub(string.gsub(string.match(subdir, "jsonlua%.subdirs%.[^%.]+%.subdirs%.(.+)"), "%.subdirs%.", "/").."/"..a, "//", "/")..".  \n")
-                  io.stdout:flush()
                 end
               end
             end
