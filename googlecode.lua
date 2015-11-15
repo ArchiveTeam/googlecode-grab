@@ -181,16 +181,16 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
         end
         for _, subdir in pairs(jsonfiles) do
           if string.match(subdir, "jsonlua%..-%.subdirs%.") then
-            local localc = string.match(url, "/dirfeed%?c=(.-)&p=")
+            local localc = string.gsub(string.gsub(string.match(url, "/dirfeed%?c=(.-)&p="), "/", "%%2F").."%2F", "%%2F%%2F", "%%2F")
             check("https://code.google.com/p/"..item_value.."/source/dirfeed?c="..localc.."&p="..string.gsub(string.gsub(string.match(subdir, "jsonlua%.(.+)"), "%.subdirs%.", "%%252F"), "/", "%%252F").."&l=2&fp=1&sp=1&r="..revision)
-            check("https://code.google.com/p/"..item_value..string.gsub("/source/browse/"..localc..'/'..string.gsub(string.match(subdir, "jsonlua%.(.+)"), "%.subdirs%.", "/").."/?r="..revision, "//", "/"))
+            check("https://code.google.com/p/"..item_value..string.gsub("/source/browse/"..string.gsub(string.gsub(localc, "%%252F", "/"), "%%2F", "")..'/'..string.gsub(string.match(subdir, "jsonlua%.(.+)"), "%.subdirs%.", "/").."/?r="..revision, "//", "/"))
             local loadingstring = "return "..string.match(subdir, "^([^%.]+)")..'["'..string.gsub(string.match(subdir, "^[^%.]+%.?(.*)"), "%.", '"]["')..'"]["filePage"]'
             if assert(loadstring(loadingstring))() then
               for a, b in pairs(assert(loadstring(loadingstring..'["files"]'))()) do
                 if string.match(url, "[^a-z0-9A-Z%-_]r=[0-9a-zA-Z%-_]+") then
-                  check("https://code.google.com/p/"..item_value..string.gsub("/source/browse/"..localc..'/'..string.gsub(string.match(subdir, "jsonlua%.(.+)"), "%.subdirs%.", "/").."/"..a.."?r="..string.match(url, "[^a-z0-9A-Z%-_]r=([0-9a-zA-Z%-_]+)"), "//", "/"))
+                  check("https://code.google.com/p/"..item_value..string.gsub("/source/browse/"..string.gsub(string.gsub(localc, "%%252F", "/"), "%%2F", "")..'/'..string.gsub(string.match(subdir, "jsonlua%.(.+)"), "%.subdirs%.", "/").."/"..a.."?r="..string.match(url, "[^a-z0-9A-Z%-_]r=([0-9a-zA-Z%-_]+)"), "//", "/"))
                 else
-                  check("https://code.google.com/p/"..item_value..string.gsub("/source/browse/"..localc..'/'..string.gsub(string.match(subdir, "jsonlua%.(.+)"), "%.subdirs%.", "/").."/"..a, "//", "/"))
+                  check("https://code.google.com/p/"..item_value..string.gsub("/source/browse/"..string.gsub(string.gsub(localc, "%%252F", "/"), "%%2F", "")..'/'..string.gsub(string.match(subdir, "jsonlua%.(.+)"), "%.subdirs%.", "/").."/"..a, "//", "/"))
                 end
               end
             end
@@ -227,17 +227,17 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
           if string.match(subdir, "jsonlua%.subdirs%.[^%.]+%.subdirs%.") then
             local localc = ""
             if string.match(url, "/source/browse/[^#%?%%]+") then
-              localc = string.match(url, "/source/browse/([^#%?%%]+)").."%2F"
+              localc = string.gsub(string.gsub(string.match(url, "/source/browse/([^#%?%%]+)"), "/", "%%2F").."%2F", "%%2F%%2F", "%%2F")
             end
             check("https://code.google.com/p/"..item_value.."/source/dirfeed?c="..localc.."&p="..string.gsub(string.match(subdir, "jsonlua%.subdirs%.[^%.]+%.subdirs%.(.+)"), "%.subdirs%.", "%%252F").."&l=2&fp=1&sp=1&r="..revision)
-            check("https://code.google.com/p/"..item_value..string.gsub("/source/browse/"..localc..'/'..string.gsub(string.match(subdir, "jsonlua%.subdirs%.[^%.]+%.subdirs%.(.+)"), "%.subdirs%.", "/").."/?r="..revision, "//", "/"))
+            check("https://code.google.com/p/"..item_value..string.gsub("/source/browse/"..string.gsub(string.gsub(localc, "%%252F", "/"), "%%2F", "")..'/'..string.gsub(string.match(subdir, "jsonlua%.subdirs%.[^%.]+%.subdirs%.(.+)"), "%.subdirs%.", "/").."/?r="..revision, "//", "/"))
             local loadingstring = "return "..string.match(subdir, "^([^%.]+)")..'["'..string.gsub(string.match(subdir, "^[^%.]+%.?(.*)"), "%.", '"]["')..'"]["filePage"]'
             if assert(loadstring(loadingstring))() then
               for a, b in pairs(assert(loadstring(loadingstring..'["files"]'))()) do
                 if string.match(url, "[^a-z0-9A-Z%-_]r=[0-9a-zA-Z%-_]+") then
-                  check("https://code.google.com/p/"..item_value..string.gsub("/source/browse/"..localc..'/'..string.gsub(string.match(subdir, "jsonlua%.subdirs%.[^%.]+%.subdirs%.(.+)"), "%.subdirs%.", "/").."/"..a.."?r="..string.match(url, "[^a-z0-9A-Z%-_]r=([0-9a-zA-Z%-_]+)"), "//", "/"))
+                  check("https://code.google.com/p/"..item_value..string.gsub("/source/browse/"..string.gsub(string.gsub(localc, "%%252F", "/"), "%%2F", "")..'/'..string.gsub(string.match(subdir, "jsonlua%.subdirs%.[^%.]+%.subdirs%.(.+)"), "%.subdirs%.", "/").."/"..a.."?r="..string.match(url, "[^a-z0-9A-Z%-_]r=([0-9a-zA-Z%-_]+)"), "//", "/"))
                 else
-                  check("https://code.google.com/p/"..item_value..string.gsub("/source/browse/"..localc..'/'..string.gsub(string.match(subdir, "jsonlua%.subdirs%.[^%.]+%.subdirs%.(.+)"), "%.subdirs%.", "/").."/"..a, "//", "/"))
+                  check("https://code.google.com/p/"..item_value..string.gsub("/source/browse/"..string.gsub(string.gsub(localc, "%%252F", "/"), "%%2F", "")..'/'..string.gsub(string.match(subdir, "jsonlua%.subdirs%.[^%.]+%.subdirs%.(.+)"), "%.subdirs%.", "/").."/"..a, "//", "/"))
                 end
               end
             end
@@ -294,6 +294,10 @@ wget.callbacks.httploop_result = function(url, err, http_stat)
   io.stdout:write(url_count.."/"..added.." = "..status_code.." "..url["url"]..".  \n")
 --  io.stdout:write(url_count .. "=" .. status_code .. " " .. url["url"] .. ".  \n")
   io.stdout:flush()
+
+  if downloaded[url["url"]] == true then
+    return wget.actions.EXIT
+  end
 
   if status_code == 404 or status_code == 403 or status_code == 400 then
     if addedtolist[string.match(url["url"], "https?://([^#]+)")] ~= true then
