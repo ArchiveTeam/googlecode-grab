@@ -92,7 +92,7 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
     if (downloaded[string.match(url, "https?://([^#]+)")] ~= true and addedtolist[string.match(url, "https?://([^#]+)")] ~= true) and (string.match(url, "https?://code%.google%.com") or string.match(url, "https?://[^%.]+%.googlecode%.com") or string.match(url, "https?://[^%.]+%.[^%.]+%.googlecode%.com")) and not (string.match(url, "https?://code%.google%.com/archive/p/") or string.match(url, "google%.com/accounts/ServiceLogin%?") or string.match(url, "https?://accounts%.google%.com/ServiceLogin%?") or string.match(url, ">") or string.match(url, "%%3E")) then
       if string.match(url, "&amp;") then
         check(string.gsub(url, "&amp;", "&"))
-        addedtolist[string.match(url, "https?://([^#]+)")] = truelocal url = string.match(urla, "^([^#]+)")
+        addedtolist[string.match(url, "https?://([^#]+)")] = true
       elseif string.match(url, "[^a-z0-9A-Z%-]spec=svn") and string.match(url, "[^a-z0-9A-Z%-]r=") then
         if revisioncheck(url) == true then
           table.insert(urls, { url=url })
