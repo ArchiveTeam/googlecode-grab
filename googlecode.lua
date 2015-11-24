@@ -164,8 +164,10 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
             if string.gsub(string.match(subdir, "^[^%.]+%.?(.*)"), "%.", '"]["') == "" then
               loadingstring = "return "..string.match(subdir, "^([^%.]+)")
             else
-              loadingstring = "return "..string.match(subdir, "^([^%.]+)")..'["'..string.gsub(string.match(subdir, "^[^%.]+%.?(.*)"), "%.", '"]["')..'"]["subdirs"]'
+              loadingstring = "return "..string.match(subdir, "^([^%.]+)")..string.gsub('["'..string.gsub(string.match(subdir, "^[^%.]+%.?(.*)"), "%.?subdirs%.", '"]["subdirs"]["'), '%[""%]', "")..'"]["subdirs"]'
             end
+                  io.stdout:write("loadingstring 1"..loadingstring..".  \n")
+                  io.stdout:flush()
             if assert(loadstring(loadingstring))() then
               for a, b in pairs(assert(loadstring(loadingstring))()) do
                 if firstdir == true then
@@ -198,7 +200,9 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
             io.stdout:flush()
             check("https://code.google.com/p/"..item_value.."/source/dirfeed?c="..localc.."&p="..string.gsub(string.gsub(string.match(subdir, "jsonlua%.(.+)"), "%.subdirs%.", "%%252F"), "/", "%%252F").."&l=2&fp=1&sp=1&r="..revision)
             check("https://code.google.com/p/"..item_value..string.gsub("/source/browse/"..string.gsub(localc, "%%2F", "/")..'/'..string.gsub(string.match(subdir, "jsonlua%.(.+)"), "%.subdirs%.", "/").."/?r="..revision, "//", "/"))
-            local loadingstring = "return "..string.match(subdir, "^([^%.]+)")..'["'..string.gsub(string.match(subdir, "^[^%.]+%.?(.*)"), "%.", '"]["')..'"]["filePage"]'
+            local loadingstring = "return "..string.match(subdir, "^([^%.]+)")..string.gsub('["'..string.gsub(string.match(subdir, "^[^%.]+%.?(.*)"), "%.?subdirs%.", '"]["subdirs"]["'), '%[""%]', "")..'"]["filePage"]'
+                  io.stdout:write("loadingstring 2"..loadingstring..".  \n")
+                  io.stdout:flush()
             if assert(loadstring(loadingstring))() then
                   io.stdout:write("yes.  \n")
                   io.stdout:flush()
@@ -235,8 +239,10 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
             if string.gsub(string.match(subdir, "^[^%.]+%.?(.*)"), "%.", '"]["') == "" then
               loadingstring = "return "..string.match(subdir, "^([^%.]+)")..'["subdirs"]'
             else
-              loadingstring = "return "..string.match(subdir, "^([^%.]+)")..'["'..string.gsub(string.match(subdir, "^[^%.]+%.?(.*)"), "%.", '"]["')..'"]["subdirs"]'
+              loadingstring = "return "..string.match(subdir, "^([^%.]+)")..string.gsub('["'..string.gsub(string.match(subdir, "^[^%.]+%.?(.*)"), "%.?subdirs%.", '"]["subdirs"]["'), '%[""%]', "")..'"]["subdirs"]'
             end
+                  io.stdout:write("loadingstring 3"..loadingstring..".  \n")
+                  io.stdout:flush()
           io.stdout:write(subdir..".subdirs".."  \n")
           io.stdout:flush()
             if assert(loadstring(loadingstring))() then
@@ -263,7 +269,9 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
             io.stdout:flush()
             check("https://code.google.com/p/"..item_value.."/source/dirfeed?c="..localc.."&p="..string.gsub(string.match(subdir, "jsonlua%.subdirs%.[^%.]+%.subdirs%.(.+)"), "%.subdirs%.", "%%252F").."&l=2&fp=1&sp=1&r="..revision)
             check("https://code.google.com/p/"..item_value..string.gsub("/source/browse/"..string.gsub(localc, "%%2F", "/")..'/'..string.gsub(string.match(subdir, "jsonlua%.subdirs%.[^%.]+%.subdirs%.(.+)"), "%.subdirs%.", "/").."/?r="..revision, "//", "/"))
-            local loadingstring = "return "..string.match(subdir, "^([^%.]+)")..'["'..string.gsub(string.match(subdir, "^[^%.]+%.?(.*)"), "%.", '"]["')..'"]["filePage"]'
+            local loadingstring = "return "..string.match(subdir, "^([^%.]+)")..string.gsub('["'..string.gsub(string.match(subdir, "^[^%.]+%.?(.*)"), "%.?subdirs%.", '"]["subdirs"]["'), '%[""%]', "")..'"]["filePage"]'
+                  io.stdout:write("loadingstring 4"..loadingstring..".  \n")
+                  io.stdout:flush()
             if assert(loadstring(loadingstring))() then
                   io.stdout:write("yes.  \n")
                   io.stdout:flush()
