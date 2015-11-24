@@ -343,6 +343,18 @@ wget.callbacks.httploop_result = function(url, err, http_stat)
 --  io.stdout:write(url_count .. "=" .. status_code .. " " .. url["url"] .. ".  \n")
   io.stdout:flush()
 
+  -- test for string.gsub()
+  if string.gsub("%2F%2F", "%%2F%%2F", "%%2F") ~= "%2F" then
+    io.stdout:write("For test 1 string.gsub gave "..string.gsub("%2F%2F", "%%2F%%2F", "%%2F").." for you, please let ArchiveTeam know!  \n")
+    io.stdout:flush()
+    return wget.actions.ABORT
+  end
+  if string.gsub('[""]', '%[""%]', "") ~= "" then
+    io.stdout:write("For test 2 string.gsub gave "..string.gsub('[""]', '%[""%]', "").." for you, please let ArchiveTeam know!  \n")
+    io.stdout:flush()
+    return wget.actions.ABORT
+  end
+
   if downloaded[url["url"]] == true then
     return wget.actions.EXIT
   end
