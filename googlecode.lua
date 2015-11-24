@@ -63,17 +63,17 @@ wget.callbacks.download_child_p = function(urlpos, parent, depth, start_url_pars
   if item_type == "project" and (downloaded[string.match(url, "https?://([^#]+)")] ~= true or addedtolist[string.match(url, "https?://([^#]+)")] ~= true) then
     -- or (string.match(url, "%?r=") and not string.match(url, "detail%?r=")) or string.match(url, "/%?repo=[^&]+&r=")
     if status_code ~= 404 and ((string.match(url, "https?://code%.google%.com/p/"..itemvalue) and not string.match(url, "https?://code%.google%.com/p/"..itemvalue.."[0-9a-zA-Z%-]")) or string.match(url, itemvalue.."%.googlecode%.com") or string.match(url, "https?://code%.google%.com/[^/]+/p/"..itemvalue) or html == 0) and not (string.match(url, "google%.com/accounts/ServiceLogin%?") or string.match(url, "https?://accounts%.google%.com/ServiceLogin%?")) then
---      if string.match(url, "[^a-z0-9A-Z%-]spec=svn") and string.match(url, "[^a-z0-9A-Z%-]r=") then
---        if revisioncheck(url) == true then
---          addedtolist[string.match(url, "https?://([^#]+)")] = true
---          added = added + 1
---          return true
---        end
---      else
-      addedtolist[string.match(url, "https?://([^#]+)")] = true
-      added = added + 1
-      return true
---      end
+      if string.match(url, "[^a-z0-9A-Z%-]spec=svn") and string.match(url, "[^a-z0-9A-Z%-]r=") then
+        if revisioncheck(url) == true then
+          addedtolist[string.match(url, "https?://([^#]+)")] = true
+          added = added + 1
+          return true
+        end
+      else
+        addedtolist[string.match(url, "https?://([^#]+)")] = true
+        added = added + 1
+        return true
+      end
     else
       return false
     end
@@ -86,18 +86,19 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
   local html = nil
   local itemvalue = string.gsub(item_value, "%-", "%%-")
   
-  local function check(url)
+  local function check(urla)
+    local url = string.match(urla, "^([^#]+)")
       -- or (string.match(url, "%?r=") and not string.match(url, "detail%?r=")) or string.match(url, "%?repo=[^&]+&r=")
     if (downloaded[string.match(url, "https?://([^#]+)")] ~= true and addedtolist[string.match(url, "https?://([^#]+)")] ~= true) and (string.match(url, "https?://code%.google%.com") or string.match(url, "https?://[^%.]+%.googlecode%.com") or string.match(url, "https?://[^%.]+%.[^%.]+%.googlecode%.com")) and not (string.match(url, "https?://code%.google%.com/archive/p/") or string.match(url, "google%.com/accounts/ServiceLogin%?") or string.match(url, "https?://accounts%.google%.com/ServiceLogin%?") or string.match(url, ">") or string.match(url, "%%3E")) then
       if string.match(url, "&amp;") then
         check(string.gsub(url, "&amp;", "&"))
-        addedtolist[string.match(url, "https?://([^#]+)")] = true
---      elseif string.match(url, "[^a-z0-9A-Z%-]spec=svn") and string.match(url, "[^a-z0-9A-Z%-]r=") then
---        if revisioncheck(url) == true then
---          table.insert(urls, { url=url })
---          addedtolist[string.match(url, "https?://([^#]+)")] = true
---          added = added + 1
---        end
+        addedtolist[string.match(url, "https?://([^#]+)")] = truelocal url = string.match(urla, "^([^#]+)")
+      elseif string.match(url, "[^a-z0-9A-Z%-]spec=svn") and string.match(url, "[^a-z0-9A-Z%-]r=") then
+        if revisioncheck(url) == true then
+          table.insert(urls, { url=url })
+          addedtolist[string.match(url, "https?://([^#]+)")] = true
+          added = added + 1
+        end
       else
         table.insert(urls, { url=url })
         addedtolist[string.match(url, "https?://([^#]+)")] = true
@@ -110,7 +111,7 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
     local jsonfiles = {}
     if string.match(url, "/"..itemvalue) and not string.match(url, "/"..itemvalue.."[0-9a-zA-Z%-]") then
       html = read_file(file)
-      for newurl in string.gmatch(html, 'href=("[^"]+)"') do
+      for newurl in string.gmatch(html, 'href=("[^"]+)') do
         if string.match(newurl, '"https?://') then
           if (string.match(string.match(newurl, '"(.+)'), "https?://code%.google%.com/p/"..itemvalue) and not string.match(string.match(newurl, '"(.+)'), "https?://code%.google%.com/p/"..itemvalue.."[0-9a-zA-Z%-]")) or string.match(string.match(newurl, '"(.+)'), itemvalue.."%.googlecode%.com") or string.match(string.match(newurl, '"(.+)'), "https?://code%.google%.com/[^/]+/p/"..itemvalue) then
             check(string.match(newurl, '"(.+)'))
@@ -124,7 +125,7 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
 --          check(newurl)
 --        end
 --      end
-      for newurl in string.gmatch(html, "'(https?://[^']+)'") do
+      for newurl in string.gmatch(html, "'(https?://[^']+)") do
         if (string.match(newurl, "https?://code%.google%.com/p/"..itemvalue) and not string.match(newurl, "https?://code%.google%.com/p/"..itemvalue.."[0-9a-zA-Z%-]")) or string.match(newurl, itemvalue.."%.googlecode%.com") or string.match(newurl, "code%.google%.com/[^/]+/p/"..itemvalue) then
           check(newurl)
         end
@@ -170,27 +171,48 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
                 if firstdir == true then
                   table.insert(jsonfiles, subdir.."."..a)
                   table.insert(newfolders, subdir.."."..a)
+                  io.stdout:write(subdir.."."..a..".  \n")
+                  io.stdout:flush()
                   firstdir = false
                 else
                   table.insert(jsonfiles, subdir..".subdirs."..a)
                   table.insert(newfolders, subdir..".subdirs."..a)
+                  io.stdout:write(subdir..".subdirs."..a..".  \n")
+                  io.stdout:flush()
                 end
               end
             end
           end
         end
         for _, subdir in pairs(jsonfiles) do
+          io.stdout:write(subdir..".  \n")
+          io.stdout:flush()
           if string.match(subdir, "jsonlua%..-%.subdirs%.") then
-            local localc = string.gsub(string.gsub(string.match(url, "/dirfeed%?c=(.-)&p="), "/", "%%2F").."%2F", "%%2F%%2F", "%%2F")
+            local localc = ""
+            if string.match(url, "/dirfeed%?c=(.+)&p=") then
+              localc = string.gsub(string.gsub(string.match(url, "/dirfeed%?c=(.-)&p="), "/", "%%2F").."%2F", "%%2F%%2F", "%%2F")
+            end
+            io.stdout:write("https://code.google.com/p/"..item_value.."/source/dirfeed?c="..localc.."&p="..string.gsub(string.gsub(string.match(subdir, "jsonlua%.(.+)"), "%.subdirs%.", "%%252F"), "/", "%%252F").."&l=2&fp=1&sp=1&r="..revision..".  \n")
+            io.stdout:flush()
+            io.stdout:write("https://code.google.com/p/"..item_value..string.gsub("/source/browse/"..string.gsub(localc, "%%2F", "/")..'/'..string.gsub(string.match(subdir, "jsonlua%.(.+)"), "%.subdirs%.", "/").."/?r="..revision, "//", "/")..".  \n")
+            io.stdout:flush()
             check("https://code.google.com/p/"..item_value.."/source/dirfeed?c="..localc.."&p="..string.gsub(string.gsub(string.match(subdir, "jsonlua%.(.+)"), "%.subdirs%.", "%%252F"), "/", "%%252F").."&l=2&fp=1&sp=1&r="..revision)
-            check("https://code.google.com/p/"..item_value..string.gsub("/source/browse/"..string.gsub(string.gsub(localc, "%%252F", "/"), "%%2F", "")..'/'..string.gsub(string.match(subdir, "jsonlua%.(.+)"), "%.subdirs%.", "/").."/?r="..revision, "//", "/"))
+            check("https://code.google.com/p/"..item_value..string.gsub("/source/browse/"..string.gsub(localc, "%%2F", "/")..'/'..string.gsub(string.match(subdir, "jsonlua%.(.+)"), "%.subdirs%.", "/").."/?r="..revision, "//", "/"))
             local loadingstring = "return "..string.match(subdir, "^([^%.]+)")..'["'..string.gsub(string.match(subdir, "^[^%.]+%.?(.*)"), "%.", '"]["')..'"]["filePage"]'
             if assert(loadstring(loadingstring))() then
+                  io.stdout:write("yes.  \n")
+                  io.stdout:flush()
               for a, b in pairs(assert(loadstring(loadingstring..'["files"]'))()) do
+                  io.stdout:write("yess, "..a..".  \n")
+                  io.stdout:flush()
                 if string.match(url, "[^a-z0-9A-Z%-_]r=[0-9a-zA-Z%-_]+") then
-                  check("https://code.google.com/p/"..item_value..string.gsub("/source/browse/"..string.gsub(string.gsub(localc, "%%252F", "/"), "%%2F", "")..'/'..string.gsub(string.match(subdir, "jsonlua%.(.+)"), "%.subdirs%.", "/").."/"..a.."?r="..string.match(url, "[^a-z0-9A-Z%-_]r=([0-9a-zA-Z%-_]+)"), "//", "/"))
+                  check("https://code.google.com/p/"..item_value..string.gsub("/source/browse/"..string.gsub(localc, "%%2F", "/")..'/'..string.gsub(string.match(subdir, "jsonlua%.(.+)"), "%.subdirs%.", "/").."/"..a.."?r="..string.match(url, "[^a-z0-9A-Z%-_]r=([0-9a-zA-Z%-_]+)"), "//", "/"))
+                  io.stdout:write("https://code.google.com/p/"..item_value..string.gsub("/source/browse/"..string.gsub(localc, "%%2F", "/")..'/'..string.gsub(string.match(subdir, "jsonlua%.(.+)"), "%.subdirs%.", "/").."/"..a.."?r="..string.match(url, "[^a-z0-9A-Z%-_]r=([0-9a-zA-Z%-_]+)"), "//", "/")..".    111111  \n")
+                  io.stdout:flush()
                 else
-                  check("https://code.google.com/p/"..item_value..string.gsub("/source/browse/"..string.gsub(string.gsub(localc, "%%252F", "/"), "%%2F", "")..'/'..string.gsub(string.match(subdir, "jsonlua%.(.+)"), "%.subdirs%.", "/").."/"..a, "//", "/"))
+                  check("https://code.google.com/p/"..item_value..string.gsub("/source/browse/"..string.gsub(localc, "%%2F", "/")..'/'..string.gsub(string.match(subdir, "jsonlua%.(.+)"), "%.subdirs%.", "/").."/"..a, "//", "/"))
+                  io.stdout:write("https://code.google.com/p/"..item_value..string.gsub("/source/browse/"..string.gsub(localc, "%%2F", "/")..'/'..string.gsub(string.match(subdir, "jsonlua%.(.+)"), "%.subdirs%.", "/").."/"..a, "//", "/")..".    22222222  \n")
+                  io.stdout:flush()
                 end
               end
             end
@@ -215,29 +237,47 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
             else
               loadingstring = "return "..string.match(subdir, "^([^%.]+)")..'["'..string.gsub(string.match(subdir, "^[^%.]+%.?(.*)"), "%.", '"]["')..'"]["subdirs"]'
             end
+          io.stdout:write(subdir..".subdirs".."  \n")
+          io.stdout:flush()
             if assert(loadstring(loadingstring))() then
               for a, b in pairs(assert(loadstring(loadingstring))()) do
                 table.insert(jsonfiles, subdir..".subdirs."..a)
                 table.insert(newfolders, subdir..".subdirs."..a)
+                io.stdout:write(subdir..".subdirs."..a..".  \n")
+                io.stdout:flush()
               end
             end
           end
         end
         for _, subdir in pairs(jsonfiles) do
+          io.stdout:write(subdir..".  \n")
+          io.stdout:flush()
           if string.match(subdir, "jsonlua%.subdirs%.[^%.]+%.subdirs%.") then
             local localc = ""
             if string.match(url, "/source/browse/[^#%?%%]+") then
               localc = string.gsub(string.gsub(string.match(url, "/source/browse/([^#%?%%]+)"), "/", "%%2F").."%2F", "%%2F%%2F", "%%2F")
             end
+            io.stdout:write("https://code.google.com/p/"..item_value.."/source/dirfeed?c="..localc.."&p="..string.gsub(string.match(subdir, "jsonlua%.subdirs%.[^%.]+%.subdirs%.(.+)"), "%.subdirs%.", "%%252F").."&l=2&fp=1&sp=1&r="..revision..".  \n")
+            io.stdout:flush()
+            io.stdout:write("https://code.google.com/p/"..item_value..string.gsub("/source/browse/"..string.gsub(localc, "%%2F", "/")..'/'..string.gsub(string.match(subdir, "jsonlua%.subdirs%.[^%.]+%.subdirs%.(.+)"), "%.subdirs%.", "/").."/?r="..revision, "//", "/")..".  \n")
+            io.stdout:flush()
             check("https://code.google.com/p/"..item_value.."/source/dirfeed?c="..localc.."&p="..string.gsub(string.match(subdir, "jsonlua%.subdirs%.[^%.]+%.subdirs%.(.+)"), "%.subdirs%.", "%%252F").."&l=2&fp=1&sp=1&r="..revision)
-            check("https://code.google.com/p/"..item_value..string.gsub("/source/browse/"..string.gsub(string.gsub(localc, "%%252F", "/"), "%%2F", "")..'/'..string.gsub(string.match(subdir, "jsonlua%.subdirs%.[^%.]+%.subdirs%.(.+)"), "%.subdirs%.", "/").."/?r="..revision, "//", "/"))
+            check("https://code.google.com/p/"..item_value..string.gsub("/source/browse/"..string.gsub(localc, "%%2F", "/")..'/'..string.gsub(string.match(subdir, "jsonlua%.subdirs%.[^%.]+%.subdirs%.(.+)"), "%.subdirs%.", "/").."/?r="..revision, "//", "/"))
             local loadingstring = "return "..string.match(subdir, "^([^%.]+)")..'["'..string.gsub(string.match(subdir, "^[^%.]+%.?(.*)"), "%.", '"]["')..'"]["filePage"]'
             if assert(loadstring(loadingstring))() then
+                  io.stdout:write("yes.  \n")
+                  io.stdout:flush()
               for a, b in pairs(assert(loadstring(loadingstring..'["files"]'))()) do
+                  io.stdout:write("yess, "..a..".  \n")
+                  io.stdout:flush()
                 if string.match(url, "[^a-z0-9A-Z%-_]r=[0-9a-zA-Z%-_]+") then
-                  check("https://code.google.com/p/"..item_value..string.gsub("/source/browse/"..string.gsub(string.gsub(localc, "%%252F", "/"), "%%2F", "")..'/'..string.gsub(string.match(subdir, "jsonlua%.subdirs%.[^%.]+%.subdirs%.(.+)"), "%.subdirs%.", "/").."/"..a.."?r="..string.match(url, "[^a-z0-9A-Z%-_]r=([0-9a-zA-Z%-_]+)"), "//", "/"))
+                  check("https://code.google.com/p/"..item_value..string.gsub("/source/browse/"..string.gsub(localc, "%%2F", "/")..'/'..string.gsub(string.match(subdir, "jsonlua%.subdirs%.[^%.]+%.subdirs%.(.+)"), "%.subdirs%.", "/").."/"..a.."?r="..string.match(url, "[^a-z0-9A-Z%-_]r=([0-9a-zA-Z%-_]+)"), "//", "/"))
+                  io.stdout:write("https://code.google.com/p/"..item_value..string.gsub("/source/browse/"..string.gsub(localc, "%%2F", "/")..'/'..string.gsub(string.match(subdir, "jsonlua%.subdirs%.[^%.]+%.subdirs%.(.+)"), "%.subdirs%.", "/").."/"..a.."?r="..string.match(url, "[^a-z0-9A-Z%-_]r=([0-9a-zA-Z%-_]+)"), "//", "/")..".  \n")
+                  io.stdout:flush()
                 else
-                  check("https://code.google.com/p/"..item_value..string.gsub("/source/browse/"..string.gsub(string.gsub(localc, "%%252F", "/"), "%%2F", "")..'/'..string.gsub(string.match(subdir, "jsonlua%.subdirs%.[^%.]+%.subdirs%.(.+)"), "%.subdirs%.", "/").."/"..a, "//", "/"))
+                  check("https://code.google.com/p/"..item_value..string.gsub("/source/browse/"..string.gsub(localc, "%%2F", "/")..'/'..string.gsub(string.match(subdir, "jsonlua%.subdirs%.[^%.]+%.subdirs%.(.+)"), "%.subdirs%.", "/").."/"..a, "//", "/"))
+                  io.stdout:write("https://code.google.com/p/"..item_value..string.gsub("/source/browse/"..string.gsub(localc, "%%2F", "/")..'/'..string.gsub(string.match(subdir, "jsonlua%.subdirs%.[^%.]+%.subdirs%.(.+)"), "%.subdirs%.", "/").."/"..a, "//", "/")..".  \n")
+                  io.stdout:flush()
                 end
               end
             end
@@ -251,12 +291,12 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
 --          check(string.gsub(url, "/#svn", "").."/"..newurl)
 --        end
 --      end
-      for newurl in string.gmatch(html, '"%.%./%.%.(/[^"]+)"') do
+      for newurl in string.gmatch(html, '"%.%./%.%.(/[^"]+)') do
         if string.match(newurl, "/"..itemvalue) and not string.match(newurl, "/"..itemvalue.."[0-9a-zA-Z%-]") then
           check(string.match(url, "(https?://[^/]+/[^/]+)/")..newurl)
         end
       end
-      for newurl in string.gmatch(html, '"(/[^"]+)"') do
+      for newurl in string.gmatch(html, '"(/[^"]+)') do
         if string.match(newurl, "//") and ((string.match(newurl, "code%.google%.com/p/"..itemvalue) and not string.match(newurl, "code%.google%.com/p/"..itemvalue.."[0-9a-zA-Z%-]")) or string.match(newurl, itemvalue.."%.googlecode%.com") or string.match(newurl, "code%.google%.com/[^/]+/p/"..itemvalue)) then
           check(string.gsub(newurl, "//", "http://"))
         elseif string.match(newurl, "/p/"..itemvalue) and not string.match(newurl, "/p/"..itemvalue.."[0-9a-zA-Z%-]") then
