@@ -301,12 +301,17 @@ wget.callbacks.httploop_result = function(url, err, http_stat)
 
   -- test for string.gsub()
   if string.gsub("%2F%2F", "%%2F%%2F", "%%2F") ~= "%2F" then
-    io.stdout:write("For test 1 string.gsub gave "..string.gsub("%2F%2F", "%%2F%%2F", "%%2F").." for you, please let ArchiveTeam know!  \n")
+    io.stdout:write("For test 1 string.gsub gave "..string.gsub("%2F%2F", "%%2F%%2F", "%%2F").." for you, please let Archive Team know!  \n")
     io.stdout:flush()
     return wget.actions.ABORT
   end
   if string.gsub('[""]', '%[""%]', "") ~= "" then
-    io.stdout:write("For test 2 string.gsub gave "..string.gsub('[""]', '%[""%]', "").." for you, please let ArchiveTeam know!  \n")
+    io.stdout:write("For test 2 string.gsub gave "..string.gsub('[""]', '%[""%]', "").." for you, please let Archive Team know!  \n")
+    io.stdout:flush()
+    return wget.actions.ABORT
+  end
+  if string.gsub('project-name-bla', '%-', "%%-") ~= "project%-name%-bla" then
+    io.stdout:write("For test 3 string.gsub gave "..string.gsub('project-name-bla', '%-', "%%-").." for you, please let Archive Team know!  \n")
     io.stdout:flush()
     return wget.actions.ABORT
   end
