@@ -12,6 +12,7 @@ local downloaded = {}
 local addedtolist = {}
 
 local status_code = nil
+local tested = false
 
 load_json_file = function(file)
   if file then
@@ -338,20 +339,28 @@ wget.callbacks.httploop_result = function(url, err, http_stat)
   io.stdout:flush()
 
   -- test for string.gsub()
-  if string.gsub("%2F%2F", "%%2F%%2F", "%%2F") ~= "%2F" then
-    io.stdout:write("For test 1 string.gsub gave "..string.gsub("%2F%2F", "%%2F%%2F", "%%2F").." for you, please let Archive Team know!  \n")
-    io.stdout:flush()
-    return wget.actions.ABORT
-  end
-  if string.gsub('[""]', '%[""%]', "") ~= "" then
-    io.stdout:write("For test 2 string.gsub gave "..string.gsub('[""]', '%[""%]', "").." for you, please let Archive Team know!  \n")
-    io.stdout:flush()
-    return wget.actions.ABORT
-  end
-  if string.gsub('project-name-bla', '%-', "%%-") ~= "project%-name%-bla" then
-    io.stdout:write("For test 3 string.gsub gave "..string.gsub('project-name-bla', '%-', "%%-").." for you, please let Archive Team know!  \n")
-    io.stdout:flush()
-    return wget.actions.ABORT
+  if tested == false then
+    if string.gsub("%2F%2F", "%%2F%%2F", "%%2F") ~= "%2F" then
+      io.stdout:write("For test 1 string.gsub gave "..string.gsub("%2F%2F", "%%2F%%2F", "%%2F").." for you, please let Archive Team know!  \n")
+      io.stdout:flush()
+      return wget.actions.ABORT
+    end
+    if string.gsub('[""]', '%[""%]', "") ~= "" then
+      io.stdout:write("For test 2 string.gsub gave "..string.gsub('[""]', '%[""%]', "").." for you, please let Archive Team know!  \n")
+      io.stdout:flush()
+      return wget.actions.ABORT
+    end
+    if string.gsub('project-name-bla', '%-', "%%-") ~= "project%-name%-bla" then
+      io.stdout:write("For test 3 string.gsub gave "..string.gsub('project-name-bla', '%-', "%%-").." for you, please let Archive Team know!  \n")
+      io.stdout:flush()
+      return wget.actions.ABORT
+    end
+    if string.gsub('bla/?bla', '/%?', "%?") ~= "bla?bla" then
+      io.stdout:write("For test 4 string.gsub gave "..string.gsub('bla/?bla', '/%?', "%?") ~= "bla?bla".." for you, please let Archive Team know!  \n")
+      io.stdout:flush()
+      return wget.actions.ABORT
+    end
+    tested = true
   end
 
   if downloaded[url["url"]] == true then
