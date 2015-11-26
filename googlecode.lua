@@ -186,7 +186,7 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
             local qreponame = ""
             if string.match(url, "[^a-z0-9A-Z%-_]repo=") then
               andreponame = "&repo="..string.match(url, "[^a-z0-9A-Z%-_]repo=([0-9a-zA-Z%-_]+)")
-              andreponame = "?repo="..string.match(url, "[^a-z0-9A-Z%-_]repo=([0-9a-zA-Z%-_]+)")
+              qreponame = "?repo="..string.match(url, "[^a-z0-9A-Z%-_]repo=([0-9a-zA-Z%-_]+)")
             end
             local localc = ""
             if string.match(url, "/dirfeed%?c=(.+)&p=") then
@@ -246,7 +246,7 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
             local qreponame = ""
             if string.match(url, "[^a-z0-9A-Z%-_]repo=") then
               andreponame = "&repo="..string.match(url, "[^a-z0-9A-Z%-_]repo=([0-9a-zA-Z%-_]+)")
-              andreponame = "?repo="..string.match(url, "[^a-z0-9A-Z%-_]repo=([0-9a-zA-Z%-_]+)")
+              qreponame = "?repo="..string.match(url, "[^a-z0-9A-Z%-_]repo=([0-9a-zA-Z%-_]+)")
             end
             local localc = ""
             if string.match(url, "/source/browse/[^#%?%%]+") then
@@ -300,6 +300,18 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
       end
       for newurl in string.gmatch(url, "(https?://[^%?]+)%?") do
         check(newurl)
+      end
+      if string.match(url, "/%?") then
+        check(string.gsub(url, "/%?", "%?"))
+      end
+      if string.match(html, "encodeURIComponent%(pathname%)") then
+        local andreponame = ""
+        if string.match(url, "[^a-z0-9A-Z%-_]repo=") then
+          andreponame = "&repo="..string.match(url, "[^a-z0-9A-Z%-_]repo=([0-9a-zA-Z%-_]+)")
+        end
+        for newurl in string.gmatch(html, "<a href=[^>]+>([^<]+)</a></td") do
+          check("https://code.google.com/p/"..item_value.."/source/diff?r="..string.match(url, "[^a-z0-9A-Z%-_]r=([0-9a-zA-Z%-_]+)").."&mode=frag&path="..string.gsub(newurl, "/", "%%2F")..andreponame)
+        end
       end
       if string.match(url, "https://code.google.com/p/"..itemvalue.."/issues/detail%?id=[0-9]+") then
         local id = string.match(url, "https://code.google.com/p/"..itemvalue.."/issues/detail%?id=([0-9]+)")
@@ -413,3 +425,4 @@ wget.callbacks.httploop_result = function(url, err, http_stat)
 
   return wget.actions.NOTHING
 end
+
