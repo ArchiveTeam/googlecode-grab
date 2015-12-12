@@ -63,7 +63,7 @@ wget.callbacks.download_child_p = function(urlpos, parent, depth, start_url_pars
   
   if item_type == "project" and (downloaded[string.match(url, "https?://([^#]+)")] ~= true or addedtolist[string.match(url, "https?://([^#]+)")] ~= true) then
     -- or (string.match(url, "%?r=") and not string.match(url, "detail%?r=")) or string.match(url, "/%?repo=[^&]+&r=")
-    if status_code ~= 404 and ((string.match(url, "https?://code%.google%.com/p/"..itemvalue) and not string.match(url, "https?://code%.google%.com/p/"..itemvalue.."[0-9a-zA-Z%-]")) or string.match(url, itemvalue.."%.googlecode%.com") or string.match(url, "https?://code%.google%.com/[^/]+/p/"..itemvalue) or html == 0) and not (string.match(url, "google%.com/accounts/ServiceLogin%?") or string.match(url, "https?://accounts%.google%.com/ServiceLogin%?") or string.match(url, "%?files_in_rev=") or string.match(url, "%.googlecode%.com/svn") or string.match(url, "%.googlecode%.com/hg") or string.match(url, "%.googlecode%.com/git") or string.match(url, "https?://code%.google%.com/p/[^/]+/source/browse/")) then
+    if status_code ~= 404 and ((string.match(url, "https?://code%.google%.com/[a-z]/"..itemvalue) and not string.match(url, "https?://code%.google%.com/[a-z]/"..itemvalue.."[0-9a-zA-Z%-]")) or string.match(url, itemvalue.."%.googlecode%.com") or string.match(url, "https?://code%.google%.com/[^/]+/[a-z]/"..itemvalue) or html == 0) and not (string.match(url, "google%.com/accounts/ServiceLogin%?") or string.match(url, "https?://accounts%.google%.com/ServiceLogin%?") or string.match(url, "%?files_in_rev=") or string.match(url, "%.googlecode%.com/svn") or string.match(url, "%.googlecode%.com/hg") or string.match(url, "%.googlecode%.com/git") or string.match(url, "https?://code%.google%.com/[a-z]/[^/]+/source/browse/")) then
       if string.match(url, "[^a-z0-9A-Z%-]spec=svn") and string.match(url, "[^a-z0-9A-Z%-]r=") then
         if revisioncheck(url) == true then
           addedtolist[string.match(url, "https?://([^#]+)")] = true
@@ -96,7 +96,7 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
   local function check(urla)
     local url = string.match(urla, "^([^#]+)")
       -- or (string.match(url, "%?r=") and not string.match(url, "detail%?r=")) or string.match(url, "%?repo=[^&]+&r=")
-    if (downloaded[string.match(url, "https?://([^#]+)")] ~= true and addedtolist[string.match(url, "https?://([^#]+)")] ~= true) and (string.match(url, "https?://code%.google%.com") or string.match(url, "https?://[^%.]+%.googlecode%.com") or string.match(url, "https?://[^%.]+%.[^%.]+%.googlecode%.com")) and not (string.match(url, "https?://code%.google%.com/archive/p/") or string.match(url, "google%.com/accounts/ServiceLogin%?") or string.match(url, "%?files_in_rev=") or string.match(url, "%.googlecode%.com/svn") or string.match(url, "%.googlecode%.com/hg") or string.match(url, "%.googlecode%.com/git") or string.match(url, "https?://code%.google%.com/p/[^/]+/source/browse/") or string.match(url, "https?://accounts%.google%.com/ServiceLogin%?") or string.match(url, ">") or string.match(url, "%%3E")) then
+    if (downloaded[string.match(url, "https?://([^#]+)")] ~= true and addedtolist[string.match(url, "https?://([^#]+)")] ~= true) and (string.match(url, "https?://code%.google%.com") or string.match(url, "https?://[^%.]+%.googlecode%.com") or string.match(url, "https?://[^%.]+%.[^%.]+%.googlecode%.com")) and not (string.match(url, "https?://code%.google%.com/archive/[a-z]/") or string.match(url, "google%.com/accounts/ServiceLogin%?") or string.match(url, "%?files_in_rev=") or string.match(url, "%.googlecode%.com/svn") or string.match(url, "%.googlecode%.com/hg") or string.match(url, "%.googlecode%.com/git") or string.match(url, "https?://code%.google%.com/[a-z]/[^/]+/source/browse/") or string.match(url, "https?://accounts%.google%.com/ServiceLogin%?") or string.match(url, ">") or string.match(url, "%%3E")) then
       if string.match(url, "&amp;") then
         check(string.gsub(url, "&amp;", "&"))
         addedtolist[string.match(url, "https?://([^#]+)")] = true
@@ -126,7 +126,7 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
       html = read_file(file)
       for newurl in string.gmatch(html, 'href=("[^"]+)') do
         if string.match(newurl, '"https?://') then
-          if (string.match(string.match(newurl, '"(.+)'), "https?://code%.google%.com/p/"..itemvalue) and not string.match(string.match(newurl, '"(.+)'), "https?://code%.google%.com/p/"..itemvalue.."[0-9a-zA-Z%-]")) or string.match(string.match(newurl, '"(.+)'), itemvalue.."%.googlecode%.com") or string.match(string.match(newurl, '"(.+)'), "https?://code%.google%.com/[^/]+/p/"..itemvalue) then
+          if (string.match(string.match(newurl, '"(.+)'), "https?://code%.google%.com/[a-z]/"..itemvalue) and not string.match(string.match(newurl, '"(.+)'), "https?://code%.google%.com/[a-z]/"..itemvalue.."[0-9a-zA-Z%-]")) or string.match(string.match(newurl, '"(.+)'), itemvalue.."%.googlecode%.com") or string.match(string.match(newurl, '"(.+)'), "https?://code%.google%.com/[^/]+/[a-z]/"..itemvalue) then
             check(string.match(newurl, '"(.+)'))
           end
         elseif not (string.match(newurl, '"/') or string.match(newurl, '"%.%./%.%.')) then
@@ -134,12 +134,12 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
         end
       end
 --      for newurl in string.gmatch(html, '"(https?://[^"]+)"') do
---        if (string.match(newurl, "https?://code%.google%.com/p/"..itemvalue) and not string.match(newurl, "https?://code%.google%.com/p/"..itemvalue.."[0-9a-zA-Z%-]")) or string.match(newurl, itemvalue.."%.googlecode%.com") then
+--        if (string.match(newurl, "https?://code%.google%.com/[a-z]/"..itemvalue) and not string.match(newurl, "https?://code%.google%.com/[a-z]/"..itemvalue.."[0-9a-zA-Z%-]")) or string.match(newurl, itemvalue.."%.googlecode%.com") then
 --          check(newurl)
 --        end
 --      end
       for newurl in string.gmatch(html, "'(https?://[^']+)") do
-        if (string.match(newurl, "https?://code%.google%.com/p/"..itemvalue) and not string.match(newurl, "https?://code%.google%.com/p/"..itemvalue.."[0-9a-zA-Z%-]")) or string.match(newurl, itemvalue.."%.googlecode%.com") or string.match(newurl, "code%.google%.com/[^/]+/p/"..itemvalue) then
+        if (string.match(newurl, "https?://code%.google%.com/[a-z]/"..itemvalue) and not string.match(newurl, "https?://code%.google%.com/[a-z]/"..itemvalue.."[0-9a-zA-Z%-]")) or string.match(newurl, itemvalue.."%.googlecode%.com") or string.match(newurl, "code%.google%.com/[^/]+/[a-z]/"..itemvalue) then
           check(newurl)
         end
       end
@@ -300,14 +300,14 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
         end
       end
       for newurl in string.gmatch(html, '"(/[^"]+)') do
-        if string.match(newurl, "//") and ((string.match(newurl, "code%.google%.com/p/"..itemvalue) and not string.match(newurl, "code%.google%.com/p/"..itemvalue.."[0-9a-zA-Z%-]")) or string.match(newurl, itemvalue.."%.googlecode%.com") or string.match(newurl, "code%.google%.com/[^/]+/p/"..itemvalue)) then
+        if string.match(newurl, "//") and ((string.match(newurl, "code%.google%.com/[a-z]/"..itemvalue) and not string.match(newurl, "code%.google%.com/[a-z]/"..itemvalue.."[0-9a-zA-Z%-]")) or string.match(newurl, itemvalue.."%.googlecode%.com") or string.match(newurl, "code%.google%.com/[^/]+/[a-z]/"..itemvalue)) then
           check(string.gsub(newurl, "//", "http://"))
-        elseif string.match(newurl, "/p/"..itemvalue) and not string.match(newurl, "/p/"..itemvalue.."[0-9a-zA-Z%-]") then
+        elseif string.match(newurl, "/[a-z]/"..itemvalue) and not string.match(newurl, "/[a-z]/"..itemvalue.."[0-9a-zA-Z%-]") then
           check("https://code.google.com"..newurl)
         end
       end
       for newurl in string.gmatch(url, "(https?://.+)/") do
-        if ((string.match(newurl, "https?://code%.google%.com/p/"..itemvalue) or string.match(newurl, itemvalue.."%.googlecode%.com") or string.match(newurl, "https?://code%.google%.com/[^/]+/p/"..itemvalue)) and not string.match(newurl, "https?://code%.google%.com/p/"..itemvalue.."[0-9a-zA-Z%-]")) then
+        if ((string.match(newurl, "https?://code%.google%.com/[a-z]/"..itemvalue) or string.match(newurl, itemvalue.."%.googlecode%.com") or string.match(newurl, "https?://code%.google%.com/[^/]+/[a-z]/"..itemvalue)) and not string.match(newurl, "https?://code%.google%.com/[a-z]/"..itemvalue.."[0-9a-zA-Z%-]")) then
           check(newurl)
         end
       end
@@ -317,21 +317,25 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
       if string.match(url, "/%?") then
         check(string.gsub(url, "/%?", "%?"))
       end
+      local urlpart = "p"
+      if string.match(url, "https?://code%.google%.com/[a-z]/") then
+        urlpart = string.match(url, "^https?://[^/]+/([a-z])/")
+      end
       if string.match(html, "encodeURIComponent%(pathname%)") then
         local andreponame = ""
         if string.match(url, "[^a-z0-9A-Z%-_]repo=") then
           andreponame = "&repo="..string.match(url, "[^a-z0-9A-Z%-_]repo=([0-9a-zA-Z%-_]+)")
         end
         for newurl in string.gmatch(html, "<a href=[^>]+>([^<]+)</a></td") do
-          check("https://code.google.com/p/"..item_value.."/source/diff?r="..string.match(url, "[^a-z0-9A-Z%-_]r=([0-9a-zA-Z%-_]+)").."&mode=frag&path="..string.gsub(newurl, "/", "%%2F")..andreponame)
+          check("https://code.google.com/"..urlpart.."/"..item_value.."/source/diff?r="..string.match(url, "[^a-z0-9A-Z%-_]r=([0-9a-zA-Z%-_]+)").."&mode=frag&path="..string.gsub(newurl, "/", "%%2F")..andreponame)
         end
       end
-      if string.match(url, "https://code.google.com/p/"..itemvalue.."/issues/detail%?id=[0-9]+") then
-        local id = string.match(url, "https://code.google.com/p/"..itemvalue.."/issues/detail%?id=([0-9]+)")
-        check("https://code.google.com/p/"..item_value.."/issues/detail?id="..id.."&can=1")
-        check("https://code.google.com/p/"..item_value.."/issues/detail?id="..id)
-        check("https://code.google.com/p/"..item_value.."/issues/peek?id="..id.."&can=1")
-        check("https://code.google.com/p/"..item_value.."/issues/peek?id="..id)
+      if string.match(url, "https://code.google.com/"..urlpart.."/"..itemvalue.."/issues/detail%?id=[0-9]+") then
+        local id = string.match(url, "https://code.google.com/"..urlpart.."/"..itemvalue.."/issues/detail%?id=([0-9]+)")
+        check("https://code.google.com/"..urlpart.."/"..item_value.."/issues/detail?id="..id.."&can=1")
+        check("https://code.google.com/"..urlpart.."/"..item_value.."/issues/detail?id="..id)
+        check("https://code.google.com/"..urlpart.."/"..item_value.."/issues/peek?id="..id.."&can=1")
+        check("https://code.google.com/"..urlpart.."/"..item_value.."/issues/peek?id="..id)
       end
     end
   end
