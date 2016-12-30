@@ -154,6 +154,20 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
         end
       end
 
+      if string.match(url, "project%.json") then
+        if json_["subrepos"] then
+          for _, repo in pairs(json_["subrepos"]) do
+            check("https://storage.googleapis.com/google-code-archive-source/v2/code.google.com/" .. item_value .. "/" .. repo .. ".source-archive.zip")
+            check("https://www.googleapis.com/storage/v1/b/google-code-archive/o/v2%2Fcode.google.com%2F" .. item_value .. "%2F" .. repo .. ".source-page-1.json?alt=media&stripTrailingSlashes=false")
+            check("https://www.googleapis.com/storage/v1/b/google-code-archive/o/v2%2Fcode.google.com%2F" .. item_value .. "%2F" .. repo .. ".commits-page-1.json?alt=media&stripTrailingSlashes=false")
+            check("https://code.google.com/archive/p/" .. item_value .. "/source/" .. repo .. "/source")
+            check("https://code.google.com/archive/p/" .. item_value .. "/source/" .. repo .. "/commits")
+            check("https://code.google.com/archive/p/" .. item_value .. "/source/" .. repo .. "/source?page=1")
+            check("https://code.google.com/archive/p/" .. item_value .. "/source/" .. repo .. "/commits?page=1")
+          end
+        end
+      end
+
       if string.match(url, "issues%-page%-[0-9]+%.json") then
         if json_["issues"] then
           for _, issue in pairs(json_["issues"]) do
