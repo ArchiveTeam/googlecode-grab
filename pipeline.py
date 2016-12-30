@@ -57,7 +57,7 @@ if not WGET_LUA:
 #
 # Update this each time you make a non-cosmetic change.
 # It will be added to the WARC files and reported to the tracker.
-VERSION = "20161230.01"
+VERSION = "20161230.02"
 USER_AGENT = 'Archive Team'
 TRACKER_ID = 'googlecode'
 TRACKER_HOST = 'tracker.archiveteam.org'
@@ -204,16 +204,16 @@ class WgetArgs(object):
             wget_args.append('https://www.googleapis.com/storage/v1/b/google-code-archive/o/v2%2Fcode.google.com%2F{0}%2Fwikis.json?alt=media&stripTrailingSlashes=false'.format(item_value))
             wget_args.append('https://www.googleapis.com/storage/v1/b/google-code-archive/o/v2%2Fcode.google.com%2F{0}%2Fdownloads-page-1.json?alt=media&stripTrailingSlashes=false'.format(item_value))
             wget_args.append('https://storage.googleapis.com/google-code-archive-source/v2/code.google.com/{0}/source-archive.zip'.format(item_value))
-            wget_args.append('https://code.google.com/archive/p/sqlany-django/source'.format(item_value))
-            wget_args.append('https://code.google.com/archive/p/sqlany-django/source/default/source'.format(item_value))
-            wget_args.append('https://code.google.com/archive/p/sqlany-django/source/default/source?page=1'.format(item_value))
-            wget_args.append('https://code.google.com/archive/p/sqlany-django/source/default/commits'.format(item_value))
-            wget_args.append('https://code.google.com/archive/p/sqlany-django/source/default/commits?page=1'.format(item_value))
-            wget_args.append('https://code.google.com/archive/p/sqlany-django/issues'.format(item_value))
-            wget_args.append('https://code.google.com/archive/p/sqlany-django/issues?page=1'.format(item_value))
-            wget_args.append('https://code.google.com/archive/p/sqlany-django/wikis'.format(item_value))
-            wget_args.append('https://code.google.com/archive/p/sqlany-django/downloads'.format(item_value))
-            wget_args.append('https://code.google.com/archive/p/sqlany-django/downloads?page=1'.format(item_value))
+            wget_args.append('https://code.google.com/archive/p/{0}/source'.format(item_value))
+            wget_args.append('https://code.google.com/archive/p/{0}/source/default/source'.format(item_value))
+            wget_args.append('https://code.google.com/archive/p/{0}/source/default/source?page=1'.format(item_value))
+            wget_args.append('https://code.google.com/archive/p/{0}/source/default/commits'.format(item_value))
+            wget_args.append('https://code.google.com/archive/p/{0}/source/default/commits?page=1'.format(item_value))
+            wget_args.append('https://code.google.com/archive/p/{0}/issues'.format(item_value))
+            wget_args.append('https://code.google.com/archive/p/{0}/issues?page=1'.format(item_value))
+            wget_args.append('https://code.google.com/archive/p/{0}/wikis'.format(item_value))
+            wget_args.append('https://code.google.com/archive/p/{0}/downloads'.format(item_value))
+            wget_args.append('https://code.google.com/archive/p/{0}/downloads?page=1'.format(item_value))
         else:
             raise Exception('Unknown item')
         

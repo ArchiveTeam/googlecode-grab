@@ -143,34 +143,40 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
         for i = 1, maxpage do
           check(start .. tostring(i) .. end_)
           if string.match(url, "source%-page%-[0-9]+%.json") then
-            check("https://code.google.com/archive/p/sqlany-django/source/default/source?page=" .. tostring(i))
+            check("https://code.google.com/archive/p/" .. item_value .. "/source/default/source?page=" .. tostring(i))
           elseif string.match(url, "commits%-page%-[0-9]+%.json") then
-            check("https://code.google.com/archive/p/sqlany-django/source/default/commits?page=" .. tostring(i))
+            check("https://code.google.com/archive/p/" .. item_value .. "/source/default/commits?page=" .. tostring(i))
           elseif string.match(url, "issues%-page%-[0-9]+%.json") then
-            check("https://code.google.com/archive/p/sqlany-django/issues?page=" .. tostring(i))
+            check("https://code.google.com/archive/p/" .. item_value .. "/issues?page=" .. tostring(i))
           elseif string.match(url, "downloads%-page%-[0-9]+%.json") then
-            check("https://code.google.com/archive/p/sqlany-django/downloads?page=" .. tostring(i))
+            check("https://code.google.com/archive/p/" .. item_value .. "/downloads?page=" .. tostring(i))
           end
         end
       end
 
       if string.match(url, "issues%-page%-[0-9]+%.json") then
-        for _, issue in pairs(json_["issues"]) do
-          check("https://www.googleapis.com/storage/v1/b/google-code-archive/o/v2%2Fcode.google.com%2F" .. item_value .. "%2Fissues%2Fissue-" .. issue["id"] .. ".json?alt=media&stripTrailingSlashes=false")
-          check("https://code.google.com/archive/p/" .. item_value .. "/issues/" .. issue["id"])
+        if json_["issues"] then
+          for _, issue in pairs(json_["issues"]) do
+            check("https://www.googleapis.com/storage/v1/b/google-code-archive/o/v2%2Fcode.google.com%2F" .. item_value .. "%2Fissues%2Fissue-" .. issue["id"] .. ".json?alt=media&stripTrailingSlashes=false")
+            check("https://code.google.com/archive/p/" .. item_value .. "/issues/" .. issue["id"])
+          end
         end
       end
 
       if string.match(url, "wikis%.json") then
-        for _, wikifile in pairs(json_["WikiFiles"]) do
-          check("https://www.googleapis.com/storage/v1/b/google-code-archive/o/v2%2Fcode.google.com%2F" .. item_value .. "%2Fwiki" .. string.gsub(wikifile, "/", "%%2F") .. "?alt=media")
-          check("https://code.google.com/archive/p/" .. item_value .. "/wikis" .. wikifile)
+        if json_["WikiFiles"] then
+          for _, wikifile in pairs(json_["WikiFiles"]) do
+            check("https://www.googleapis.com/storage/v1/b/google-code-archive/o/v2%2Fcode.google.com%2F" .. item_value .. "%2Fwiki" .. string.gsub(wikifile, "/", "%%2F") .. "?alt=media")
+            check("https://code.google.com/archive/p/" .. item_value .. "/wikis" .. wikifile)
+          end
         end
       end
 
       if string.match(url, "downloads%-page%-[0-9]+%.json") then
-        for _, download in pairs(json_["downloads"]) do
-          check("https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/" .. item_value .. "/" .. download["filename"])
+        if json_["downloads"] then
+          for _, download in pairs(json_["downloads"]) do
+            check("https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/" .. item_value .. "/" .. download["filename"])
+          end
         end
       end
     end
