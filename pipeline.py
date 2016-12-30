@@ -36,7 +36,7 @@ if StrictVersion(seesaw.__version__) < StrictVersion("0.8.5"):
 # 2. prints the required version string
 WGET_LUA = find_executable(
     "Wget+Lua",
-    ["GNU Wget 1.14.lua.20130523-9a5c", "GNU Wget 1.14.lua.20160530-955376b"],
+    ["GNU Wget 1.14.lua.20130523-9a5c"],
     [
         "./wget-lua",
         "./wget-lua-warrior",
@@ -57,8 +57,8 @@ if not WGET_LUA:
 #
 # Update this each time you make a non-cosmetic change.
 # It will be added to the WARC files and reported to the tracker.
-VERSION = "20160605.01"
-USER_AGENT = 'ArchiveTeam'
+VERSION = "20161230.01"
+USER_AGENT = 'Archive Team'
 TRACKER_ID = 'googlecode'
 TRACKER_HOST = 'tracker.archiveteam.org'
 
@@ -195,39 +195,25 @@ class WgetArgs(object):
         item['item_type'] = item_type
         item['item_value'] = item_value
         
-        assert item_type in ('project')
-        
-        if item_type == 'project':
-            wget_args.append('https://code.google.com/p/{0}/'.format(item_value))
-            wget_args.append('http://{0}.googlecode.com/'.format(item_value))
-#            wget_args.append('http://{0}.googlecode.com/svn/'.format(item_value))
-#            wget_args.append('http://{0}.googlecode.com/hg/'.format(item_value))
-#            wget_args.append('http://{0}.googlecode.com/git/'.format(item_value))
-#            wget_args.append('http://{0}.googlecode.com/svn-history/'.format(item_value))
-#            wget_args.append('http://{0}.googlecode.com/hg-history/'.format(item_value))
-#            wget_args.append('http://{0}.googlecode.com/git-history/'.format(item_value))
-            wget_args.append('https://code.google.com/p/{0}/downloads/'.format(item_value))
-            wget_args.append('https://code.google.com/p/{0}/w/'.format(item_value))
-            wget_args.append('https://code.google.com/p/{0}/wiki/'.format(item_value))
-            wget_args.append('https://code.google.com/p/{0}/issues/'.format(item_value))
-#            wget_args.append('https://code.google.com/p/{0}/source/'.format(item_value))
-            for num in range(1, 9):
-                wget_args.append('https://code.google.com/p/{0}/downloads/list?can={1}&q=&colspec=Filename+Summary+Uploaded+ReleaseDate+Size+DownloadCount'.format(item_value, num))
-                wget_args.append('https://code.google.com/p/{0}/downloads/list?can={1}&q=&colspec=Filename+Size+Summary+DownloadCount+Uploaded+UploadedBy+Component'.format(item_value, num))
-                wget_args.append('https://code.google.com/p/{0}/w/list?can={1}&q=&colspec=PageName+Summary+Changed+ChangedBy'.format(item_value, num))
-                wget_args.append('https://code.google.com/p/{0}/issues/list?can={1}&q=&colspec=ID+Type+Status+Priority+Milestone+Owner+Summary&cells=tiles'.format(item_value, num))
-                wget_args.append('https://code.google.com/p/{0}/issues/list?can={1}&q=&colspec=Stars+Summary+Addons+Type+Status+Milestone+Owner&cells=tiles'.format(item_value, num))
-#                wget_args.append('https://code.google.com/p/{0}/downloads/list?can={1}&q=&colspec='.format(item_value, num))
-#                wget_args.append('https://code.google.com/p/{0}/w/list?can={1}&q=&colspec='.format(item_value, num))
-#                wget_args.append('https://code.google.com/p/{0}/issues/list?can={1}&q=&colspec='.format(item_value, num))
-#                wget_args.append('https://code.google.com/p/{0}/downloads/list?can={1}&q='.format(item_value, num))
-#                wget_args.append('https://code.google.com/p/{0}/w/list?can={1}&q='.format(item_value, num))
-#                wget_args.append('https://code.google.com/p/{0}/issues/list?can={1}&q='.format(item_value, num))
-#                wget_args.append('https://code.google.com/p/{0}/downloads/list?can={1}'.format(item_value, num))
-#                wget_args.append('https://code.google.com/p/{0}/w/list?can={1}'.format(item_value, num))
-#                wget_args.append('https://code.google.com/p/{0}/issues/list?can={1}'.format(item_value, num))
-                wget_args.append('https://code.google.com/p/{0}/issues/list?can={1}&q=&colspec=ID+Type+Status+Priority+Milestone+Owner+Summary&cells='.format(item_value, num))
-                wget_args.append('https://code.google.com/p/{0}/issues/list?can={1}&q=&colspec=ID+Type+Status+Priority+Milestone+Owner+Summary'.format(item_value, num))
+        if item_type == 'archive':
+            wget_args.append('https://code.google.com/archive/p/{0}/'.format(item_value))
+            wget_args.append('https://www.googleapis.com/storage/v1/b/google-code-archive/o/v2%2Fcode.google.com%2F{0}%2Fproject.json?alt=media&stripTrailingSlashes=false'.format(item_value))
+            wget_args.append('https://www.googleapis.com/storage/v1/b/google-code-archive/o/v2%2Fcode.google.com%2F{0}%2Fsource-page-1.json?alt=media&stripTrailingSlashes=false'.format(item_value))
+            wget_args.append('https://www.googleapis.com/storage/v1/b/google-code-archive/o/v2%2Fcode.google.com%2F{0}%2Fcommits-page-1.json?alt=media&stripTrailingSlashes=false'.format(item_value))
+            wget_args.append('https://www.googleapis.com/storage/v1/b/google-code-archive/o/v2%2Fcode.google.com%2F{0}%2Fissues-page-1.json?alt=media&stripTrailingSlashes=false'.format(item_value))
+            wget_args.append('https://www.googleapis.com/storage/v1/b/google-code-archive/o/v2%2Fcode.google.com%2F{0}%2Fwikis.json?alt=media&stripTrailingSlashes=false'.format(item_value))
+            wget_args.append('https://www.googleapis.com/storage/v1/b/google-code-archive/o/v2%2Fcode.google.com%2F{0}%2Fdownloads-page-1.json?alt=media&stripTrailingSlashes=false'.format(item_value))
+            wget_args.append('https://storage.googleapis.com/google-code-archive-source/v2/code.google.com/{0}/source-archive.zip'.format(item_value))
+            wget_args.append('https://code.google.com/archive/p/sqlany-django/source'.format(item_value))
+            wget_args.append('https://code.google.com/archive/p/sqlany-django/source/default/source'.format(item_value))
+            wget_args.append('https://code.google.com/archive/p/sqlany-django/source/default/source?page=1'.format(item_value))
+            wget_args.append('https://code.google.com/archive/p/sqlany-django/source/default/commits'.format(item_value))
+            wget_args.append('https://code.google.com/archive/p/sqlany-django/source/default/commits?page=1'.format(item_value))
+            wget_args.append('https://code.google.com/archive/p/sqlany-django/issues'.format(item_value))
+            wget_args.append('https://code.google.com/archive/p/sqlany-django/issues?page=1'.format(item_value))
+            wget_args.append('https://code.google.com/archive/p/sqlany-django/wikis'.format(item_value))
+            wget_args.append('https://code.google.com/archive/p/sqlany-django/downloads'.format(item_value))
+            wget_args.append('https://code.google.com/archive/p/sqlany-django/downloads?page=1'.format(item_value))
         else:
             raise Exception('Unknown item')
         
