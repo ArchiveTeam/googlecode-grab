@@ -126,7 +126,7 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
     end
   end
   
-  if allowed(url) and not (string.match(url, "google%-code%-archive%-downloads") or status_code == 404) then
+  if allowed(url) and not (string.match(url, "google%-code%-archive%-downloads") or string.match(url, "/source%-archive%.zip$") or status_code == 404) then
     html = read_file(file)
 
     if string.match(url, "^https?://[^/]*googleapis%.com/storage/v1/b/google%-code%-archive/o/")
