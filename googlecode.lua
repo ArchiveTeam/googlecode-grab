@@ -51,7 +51,8 @@ allowed = function(url)
   end
 
   if item_type == "archive" then
-    if string.match(url, "^https?://code%.google%.com/p/") then
+    if string.match(url, "^https?://code%.google%.com/p/")
+       or not string.match(url, "^https?://[^/]*google") then
       return false
     end
     for s in string.gmatch(url, "([0-9a-z%-]+)") do
